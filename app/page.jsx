@@ -9,8 +9,9 @@ function StudentForm() {
   const [selectedOption, setSelectedOption] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [people, setPeople] = useState("");
-  const [status,setstatus]= useState(true)
-  const [error,seterror] =useState('')
+  const [status, setstatus] = useState(true);
+  const [error, seterror] = useState("");
+
   const url =
     "https://script.google.com/macros/s/AKfycbyyNaI4HqvFmP-Zz13PfSoN_t88yJ3IO_03X0tfwbhqQgyX4ga0rICQp89lh1tGWvCeHQ/exec";
   const options = [
@@ -51,7 +52,7 @@ function StudentForm() {
       participants: [people[3]?.register],
     },
     {
-      value: "5", 
+      value: "5",
       label: "W5",
       location: "หลังวัดหนองแวงบึงแก่นนคร",
       salary: "500 บาท",
@@ -239,12 +240,10 @@ function StudentForm() {
       count: 14,
       participants: [people[24]?.register],
     },
-    
   ];
 
   useEffect(() => {
     fetchData();
- 
   }, []);
 
   const fetchData = async () => {
@@ -258,8 +257,9 @@ function StudentForm() {
       }
 
       const post = await res.json();
+
       setPeople(post);
-      setstatus(false)
+      setstatus(false);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -267,13 +267,17 @@ function StudentForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    if (!name || studentId.length<11 || !selectedFaculty || !selectedOption || !tel) {
+      seterror("โปรดกรอกข้อมูลให้ครับถ้วน");
+      return;
+    }
+
     try {
-      setstatus(true)
+      setstatus(true);
       let body = {
         name: name,
         studentid: studentId,
-        tel:":"+ tel,
+        tel: ":" + tel,
         location: selectedOption,
         faculty: selectedFaculty,
       };
@@ -283,14 +287,17 @@ function StudentForm() {
         body: new URLSearchParams(body),
       });
       if (res.ok) {
+        setName("");
+        setTel("");
+        setStudentId("");
         alert("ยืนยันการสมัครเสร็จสิ้น");
       } else {
-        alert("มีปัญหาการเชื่อมต่อโปรดติดต่อ admin")
+        alert("มีปัญหาการเชื่อมต่อโปรดติดต่อ admin");
       }
     } catch (error) {
       console.log("error", error);
     } finally {
-      setstatus(false)
+      setstatus(false);
     }
   };
 
@@ -315,7 +322,9 @@ function StudentForm() {
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-center mb-6">แบบฟอร์มนักศึกษา</h2>
+      <h2 className="text-2xl font-bold text-center mb-6">
+        ระบบ รับสมัครนักศึกษาช่วยงานขอนแก่นมาราธอน ฝ่ายบริการน้ำนักวิ่ง 2025
+      </h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label
@@ -331,7 +340,7 @@ function StudentForm() {
             onChange={(e) => setName(e.target.value)}
             placeholder="กรอกชื่อ"
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+            
           />
         </div>
         <div className="mb-4">
@@ -339,7 +348,7 @@ function StudentForm() {
             htmlFor="studentId"
             className="block text-gray-700 font-medium mb-2"
           >
-            รหัสนักศึกษา:
+            รหัสนักศึกษา: (ตัวอย่าง 66123456-7)
           </label>
           <input
             type="text"
@@ -348,7 +357,6 @@ function StudentForm() {
             onChange={handleInputChange}
             placeholder="กรอกรหัสนักศึกษา"
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
           />
         </div>
         <div className="mb-4">
@@ -359,10 +367,10 @@ function StudentForm() {
             type="text"
             id="tel"
             value={tel}
-            onChange={(e) => setTel((e.target.value))}
+            onChange={(e) => setTel(e.target.value)}
             placeholder="กรอกเบอร์โทรศัพท์"
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+          
           />
         </div>
         <div className="mb-4 relative">
@@ -461,8 +469,9 @@ function StudentForm() {
           type="submit"
           className="w-full bg-green-500 text-white p-3 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
-          {status? "กำลังส่งข้อมูล":"ยืนยันการสมัคร"}
+          {status ? "กำลังส่งข้อมูล" : "ยืนยันการสมัคร"}
         </button>
+        {error  && <p className="mt-[10px] text-red-500">{error}</p>}
       </form>
     </div>
   );
